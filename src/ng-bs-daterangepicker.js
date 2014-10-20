@@ -1,6 +1,6 @@
 /**
- * @license ng-bs-daterangepicker v0.0.1
- * (c) 2013 Luis Farzati http://github.com/luisfarzati/ng-bs-daterangepicker
+ * @license ng-bs-daterangepicker v0.0.2
+ * (c) 2013 Chang Liu https://github.com/changLiuUNSW/ng-bs-daterangepicker.git
  * License: MIT
  */
 (function (angular) {
@@ -46,23 +46,25 @@ angular.module('ngBootstrap', []).directive('input', function ($compile, $parse)
 			};
 
 			$scope.$watch($attributes.ngModel, function (modelValue) {
-				if (!modelValue || (!modelValue.startDate)) {
-					ngModel.$setViewValue({ startDate: moment().startOf('day'), endDate: moment().startOf('day') });
-					return;
-				}
-				$element.data('daterangepicker').startDate = modelValue.startDate;
-				$element.data('daterangepicker').endDate = modelValue.endDate;
 				$element.data('daterangepicker').updateView();
 				$element.data('daterangepicker').updateCalendars();
 				$element.data('daterangepicker').updateInputText();
 			});
 
-			$element.daterangepicker(options, function(start, end) {
-				$scope.$apply(function () {
-					ngModel.$setViewValue({ startDate: start, endDate: end });
-					ngModel.$render();
-				});
-			});			
+			    $element.daterangepicker(options);
+                $element.on('apply.daterangepicker', function (ev, picker) {
+                    $scope.$apply(function () {
+                        ngModel.$setViewValue({ startDate: picker.oldStartDate, endDate: picker.oldEndDate });
+                        ngModel.$render();
+                    });
+                });
+
+                $element.on('cancel.daterangepicker', function (ev, picker) {
+                    $scope.$apply(function () {
+                        ngModel.$setViewValue(null);
+                    });
+                    $element.val('');
+                });	
 		}
 	};
 });
